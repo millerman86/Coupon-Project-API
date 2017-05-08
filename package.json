@@ -4,7 +4,8 @@
   "description": "Barebones starting point for node",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon .",
+    "start": "node .",
+    "start:dev": "nodemon .",
     "test": "_mocha test"
   },
   "repository": {
@@ -21,9 +22,6 @@
     "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
     "babel-eslint": "^6.1.2",
-    "babel-polyfill": "^6.23.0",
-    "babel-preset-pundits": "^1.0.6",
-    "babel-register": "^6.11.6",
     "code": "^3.0.2",
     "eslint": "^3.3.1",
     "eslint-config-pundits": "^1.0.0",
@@ -36,6 +34,9 @@
     "boom": "^4.3.1",
     "del": "^2.2.2",
     "fs": "0.0.1-security",
+    "babel-register": "^6.11.6",
+    "babel-preset-pundits": "^1.0.6",
+    "babel-polyfill": "^6.23.0",
     "good": "^7.0.2",
     "good-console": "^6.3.1",
     "hapi": "^16.0.0",
