@@ -6,7 +6,7 @@ import Clipped from './plugins/clipped.js';
 
 const server = new Server({});
 const env = process.env.NODE_ENV || 'development';
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 server.connection({
   port: 4000,
