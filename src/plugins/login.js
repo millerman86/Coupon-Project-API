@@ -23,15 +23,26 @@ const plugin = (server, options, next) => {
 
         const foundCustomer = await customers.findOne({username});
 
+        console.log(foundCustomer);
+
+        // If the user is not found in the database
         if (!foundCustomer) {
-          return reply({message: 'User not found'})
+          return reply({message: 'User not found!!!!'})
         }
+
+        // If the user is found, but the password is not correct
+        if (foundCustomer && !Bcrypt.compareSync(password, foundCustomer.hashpassword)) {
+          return reply({message: 'Password incorrect'});
+        }
+
+        // If the user is found and the password matches
         if (foundCustomer && Bcrypt.compareSync(password, foundCustomer.hashpassword)) {
           const token = jwt.sign(foundCustomer, "secret", {expiresIn: '1 day'});
+          console.log(token);
           return reply({token: token, type: foundCustomer.type});
         }
 
-        return reply();
+        return reply({});
       }
     }
   });

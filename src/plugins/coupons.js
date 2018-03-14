@@ -5,6 +5,9 @@ function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
+function blah() {
+  console.log('blah')
+}
 
 const plugin = (server, options, next) => {
 
