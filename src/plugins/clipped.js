@@ -20,14 +20,11 @@ const plugin = (server, options, next) => {
     handler: {
       async: async(request, reply) => {
         let {couponId} = request.payload;
-        console.log(couponId);
         const customer = request.params.customer ?
           encodeURIComponent(request.params.customer) : '';
-        console.log(customer);
         if (!customer) {
           return reply(Boom.unauthorized('You are not authorized.'));
         } else if (customer) {
-          console.log('awefasdfasdf');
           let cursor = await collection('customers');
           let foundUser = await cursor.findOne({username: customer});
 
@@ -38,7 +35,6 @@ const plugin = (server, options, next) => {
           if (!foundUser) {
             return reply({message: 'You are not authorized.'});
           } else if (foundUser) {
-            console.log('PLEASE WORK!!');
             let couponCursor = await collection('company');
 
             let coupons = couponCursor.aggregate({
@@ -77,7 +73,6 @@ const plugin = (server, options, next) => {
               }
             }
 
-            console.log(foundUserData);
 
             for (let excludedItem of foundUserData) {
               regular = regular.filter(i => parseInt(i.id) !== parseInt(excludedItem))

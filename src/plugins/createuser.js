@@ -37,53 +37,37 @@ const plugin = (server, options, next) => {
     handler: {
       async: async(request, reply) => {
         console.log(request.payload);
-        let {username, password, usertype} = request.payload;
 
-        if (username && password && usertype === 'user') {
-          const customers = await collection('customers');
+        let {username, password} = request.payload;
 
-          const foundCustomer = await customers.findOne({username});
 
-          if (foundCustomer) {
-            return reply.redirect();
-          } else if (!foundCustomer) {
-            const hashpassword = await encryptPassword(password);
+        const customers = await collection('customers');
 
-            const user = {username, hashpassword, coupons: []};
+        // TRY TO FIND THE USER SPECIFIED IN REQUEST.PAYLOAD
+        const foundCustomer = await customers.findOne({username});
 
-            const result = await customers.insertOne({username, hashpassword, coupons: []});
-            if (result.insertedCount === 1) {
-              const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
-              return reply({token: token, type: 'user'});
+        if (foundCustomer) {
+          return reply({message: 'User already exists, please choose another username'})
+        } else if (!foundCustomer) {
+          const hashpassword = await encryptPassword(password);
 
-            }
-          }
-        } else if (username && password && usertype === 'company') {
+          // CREATE THE VERY SPECIFIC USER PROFILE DATA STRUCTURE RIGHT HERE THAT WILL BE INSERTED INTO THE DATABASE
+          const user = {
+            username,
+            hashpassword,
+            coupons: []
+          };
 
-          const companies = await collection('company');
-
-          const foundCompany = companies.findOne({username});
-
-          if (foundCompany) {
-            return reply.redirect();
-          }
-
-          if (!foundCompany) {
-            const hashpassword = await encryptPassword(password);
-            const user = {username, hashpassword, coupons: []};
-            const result = await companies.insertOne({username, hashpassword, coupons: []});
-
-            if (result.insertedCount === 1) {
-              const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
-              return reply({token: token, type: 'company'});
-            }
+          const result = await customers.insertOne({user});
+          if (result.insertedCount === 1) {
+            const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
+            return reply({token: token, type: 'user', username: username});
 
           }
-
         }
-
-        return reply();
+        return reply({message: "This function shouldn't run"});
       }
+
     }
   });
 
@@ -97,3 +81,8 @@ plugin.attributes = {
 };
 
 export default plugin;
+
+
+
+
+

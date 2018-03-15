@@ -143,7 +143,6 @@ const plugin = (server, options, next) => {
         } else {
           for (let key in params) {
             if (key === 'company') {
-              console.log('in company function');
               const coupons = couponCursor.find({company: {$exists: true}});
               let results = await coupons.toArray();
               console.log(params.company.charAt(0).toLowerCase());
@@ -155,8 +154,6 @@ const plugin = (server, options, next) => {
               console.log(results);
               return reply(results);
             } else if (key === 'price') {
-
-              console.log('what the helio!!!!');
 
               let {price, pageBase, direction} = params;
               console.log(price, pageBase, direction);
@@ -223,9 +220,6 @@ const plugin = (server, options, next) => {
               regular.sort(function (a, b) {
                 return parseFloat(a.price) - parseFloat(b.price)
               });
-
-              console.log(regular + 'a;slkdjf;lkasjdf;lkj');
-
 
               let resultsPerPage;
 
