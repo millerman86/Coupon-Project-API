@@ -12,7 +12,8 @@ const plugin = (server, options, next) => {
       },
       tags: ['api,', 'v1'],
       cors: {
-        origin: ['http://localhost:3000'],
+        origin: ['http://elegant-kalam-35b272.netlify.com'],
+
         additionalHeaders: ['Access-Control-Allow-Origin', 'cache-control', 'x-requested-with']
       },
     },
