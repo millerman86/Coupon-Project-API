@@ -52,13 +52,13 @@ const plugin = (server, options, next) => {
           const hashpassword = await encryptPassword(password);
 
           // CREATE THE VERY SPECIFIC USER PROFILE DATA STRUCTURE RIGHT HERE THAT WILL BE INSERTED INTO THE DATABASE
-          const user = {
-            username,
-            hashpassword,
-            coupons: []
-          };
+          // const user = {
+          //   username,
+          //   hashpassword,
+          //   coupons: []
+          // };
 
-          const result = await customers.insertOne({user});
+          const result = await customers.insertOne({username, hashpassword, coupons});
           if (result.insertedCount === 1) {
             const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
             return reply({token: token, type: 'user', username: username});

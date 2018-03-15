@@ -5,96 +5,97 @@ const plugin = (server, options, next) => {
 
   server.route({
     method: 'POST',
-    path: '/v1/clipped/{customer}',
+    path: '/v1/clipped',
     config: {
       plugins: {
         body: {merg: false, sanitizer: {stripNullorEmpty: false}}
       },
       tags: ['api,', 'v1'],
       cors: {
-        origin: ['*'],
-        additionalHeaders: ['cache-control', 'x-requested-with']
+        origin: ['http://localhost:3000'],
+        additionalHeaders: ['Access-Control-Allow-Origin', 'cache-control', 'x-requested-with']
       },
     },
 
     handler: {
       async: async(request, reply) => {
-        let {couponId} = request.payload;
-        const customer = request.params.customer ?
-          encodeURIComponent(request.params.customer) : '';
-        if (!customer) {
-          return reply(Boom.unauthorized('You are not authorized.'));
-        } else if (customer) {
-          let cursor = await collection('customers');
-          let foundUser = await cursor.findOne({username: customer});
-
-          await cursor.update({'username': customer}, {$addToSet: {'coupons': couponId}});
-
-          let foundUserData = foundUser.coupons;
-
-          if (!foundUser) {
-            return reply({message: 'You are not authorized.'});
-          } else if (foundUser) {
-            let couponCursor = await collection('company');
-
-            let coupons = couponCursor.aggregate({
-              $project: {
-                _id: 0,
-                id: 1,
-                price: 1,
-                product: 1,
-                company: 1,
-                shipping: 1,
-                deal: 1,
-              }
-            });
-
-            coupons = await coupons.toArray();
-
-            let featured = [];
-            let regular = [];
-            for (let coupon of coupons) {
-              if (coupon.deal
-                && coupon.offer
-                && coupon.condition
-                && coupon.disclaimer) {
-                featured.push(coupon);
-              }
-            }
-            for (let coupon of coupons) {
-              if (coupon.company
-                && coupon.id
-                // && coupon.product
-                // && coupon.shipping
-                // && coupon.deal
-                && coupon.price
-              ) {
-                regular.push(coupon);
-              }
-            }
 
 
-            for (let excludedItem of foundUserData) {
-              regular = regular.filter(i => parseInt(i.id) !== parseInt(excludedItem))
-            }
+        let {couponId, customer} = request.payload;
 
-            featured = featured.slice(0, 4);
+        console.log(couponId, customer);
 
-            regular = regular.slice(0, 15);
+        let cursor = await collection('customers');
+        let foundUser = await cursor.findOne({username: customer});
 
-            let couponResponse = [{regular: regular, featured: featured, pageBase: 0, resultsPerPage: 16}];
+        if (!foundUser) return reply({message: "USER NOT FOUND"});
 
-            return reply(couponResponse);
 
+        await cursor.findOneAndUpdate({"username": customer}, {$addToSet: {"coupons": couponId}});
+
+        let couponCursor = await collection('company');
+
+
+        let coupons = couponCursor.aggregate({
+          $project: {
+            _id: 0,
+            id: 1,
+            price: 1,
+            product: 1,
+            company: 1,
+            shipping: 1,
+            deal: 1,
+          }
+        });
+
+
+        coupons = await coupons.toArray();
+
+
+        cursor = await collection('customers');
+        foundUser = await cursor.findOne({username: customer});
+
+
+        let alreadyClippedCoupons = foundUser.coupons;
+
+
+        let featured = [];
+        let regular = [];
+        for (let coupon of coupons) {
+          if (coupon.deal
+            && coupon.offer
+            && coupon.condition
+            && coupon.disclaimer) {
+            featured.push(coupon);
           }
         }
-        return reply();
+        for (let coupon of coupons) {
+          if (coupon.company
+            && coupon.id
+            && coupon.price
+          ) {
+            regular.push(coupon);
+          }
+        }
+
+
+
+        for (let excludedItem of alreadyClippedCoupons) {
+          regular = regular.filter(i => parseInt(i.id) !== parseInt(excludedItem))
+        }
+
+
+        featured = featured.slice(0, 4);
+
+        regular = regular.slice(0, 15);
+
+
+        return reply({message: 'This is an empty reply', regular: regular, featured: featured});
+
       }
     }
   });
-
   next();
-
 };
 
 plugin.attributes = {
@@ -104,3 +105,15 @@ plugin.attributes = {
 
 
 export default plugin;
+
+
+
+
+
+
+
+
+
+
+
+
