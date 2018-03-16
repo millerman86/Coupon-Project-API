@@ -46,22 +46,27 @@ const plugin = (server, options, next) => {
         // TRY TO FIND THE USER SPECIFIED IN REQUEST.PAYLOAD
         const foundCustomer = await customers.findOne({username});
 
+        console.log(!!foundCustomer)
+
         if (foundCustomer) {
           return reply({message: 'User already exists, please choose another username'})
         } else if (!foundCustomer) {
           const hashpassword = await encryptPassword(password);
 
-          // CREATE THE VERY SPECIFIC USER PROFILE DATA STRUCTURE RIGHT HERE THAT WILL BE INSERTED INTO THE DATABASE
-          // const user = {
-          //   username,
-          //   hashpassword,
-          //   coupons: []
-          // };
 
-          const result = await customers.insertOne({username, hashpassword, coupons});
+          const result = await customers.insertOne({username, hashpassword, coupons: []});
+
+
           if (result.insertedCount === 1) {
+            // CREATE THE VERY SPECIFIC USER PROFILE DATA STRUCTURE RIGHT HERE THAT WILL BE INSERTED INTO THE DATABASE
+            const user = {
+              username,
+              hashpassword,
+              // coupons: [] // WHEN SIGNING THE JWT TOKEN, I'M GOING TO NEED AN OBJECT, BUT PROBABLY NOT A COUPONS ARRAY
+            };
+
             const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
-            return reply({token: token, type: 'user', username: username});
+            return reply({token: token});
 
           }
         }
