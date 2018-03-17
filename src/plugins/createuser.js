@@ -46,7 +46,7 @@ const plugin = (server, options, next) => {
         // TRY TO FIND THE USER SPECIFIED IN REQUEST.PAYLOAD
         const foundCustomer = await customers.findOne({username});
 
-        console.log(!!foundCustomer)
+        console.log(!!foundCustomer);
 
         if (foundCustomer) {
           return reply({message: 'User already exists, please choose another username'})
@@ -66,7 +66,7 @@ const plugin = (server, options, next) => {
             };
 
             const token = jwt.sign(user, 'secret', {expiresIn: '1 day'});
-            return reply({token: token});
+            return reply({token: token, username: username});
 
           }
         }

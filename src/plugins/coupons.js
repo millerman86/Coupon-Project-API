@@ -69,7 +69,7 @@ const plugin = (server, options, next) => {
 
           featured = featured.slice(0, 4);
 
-          regular = regular.slice(0, 15);
+          regular = regular.slice(0, 16);
 
           let couponResponse = [{regular: regular, featured: featured, pageBase: 0, pageSize: 16}];
 

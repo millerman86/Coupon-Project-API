@@ -63,7 +63,7 @@ const plugin = (server, options, next) => {
         if (foundCustomer && Bcrypt.compareSync(password, foundCustomer.hashpassword)) {
           const token = jwt.sign(foundCustomer, "secret", {expiresIn: '1 day'});
           console.log('HERE IS YOUR TOKEN', token);
-          return reply({token: token, type: foundCustomer.type, username: foundCustomer.username}); // WILL BE REPLY.TOKEN, REPLY.TYPE ON THE CLIENT SIDE
+          return reply({token: token, username: foundCustomer.username}); // WILL BE REPLY.TOKEN, REPLY.TYPE ON THE CLIENT SIDE
         }
 
         return reply({message: "This function shouldn't ever run, please check code if it does"});

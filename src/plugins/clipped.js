@@ -12,7 +12,7 @@ const plugin = (server, options, next) => {
       },
       tags: ['api,', 'v1'],
       cors: {
-        origin: ['http://elegant-kalam-35b272.netlify.com'],
+        origin: ['http://elegant-kalam-35b272.netlify.com', 'http://localhost:3000'],
 
         additionalHeaders: ['Access-Control-Allow-Origin', 'cache-control', 'x-requested-with']
       },
@@ -52,6 +52,7 @@ const plugin = (server, options, next) => {
 
         coupons = await coupons.toArray();
 
+        console.log('COUPONS', coupons);
 
         cursor = await collection('customers');
         foundUser = await cursor.findOne({username: customer});
